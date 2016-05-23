@@ -1,0 +1,22 @@
+h3{
+	margin: 0 auto;
+	color: magenta;
+	max-width: 400px;
+	text-align: center;
+	padding: 40px;
+}
+
+.initial-grid{
+	height: 400px;
+	width: 400px;
+	margin: 0 auto;
+	border: 1px solid black;
+}
+
+.button-new-board{
+	width: 400px;
+	margin: 0 auto;
+	text-align: center;
+	display: block;
+	margin-bottom: 40px;
+}
