@@ -53,7 +53,7 @@
 	
 	var React = __webpack_require__(/*! react */ 162);
 	
-	var Grid = __webpack_require__(/*! ./grid */ 168);
+	var Grid = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"./grid\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
 	
 	var BattleshipApp = React.createClass({
 		displayName: 'BattleshipApp',
@@ -20856,27 +20856,6 @@
 	
 	module.exports = onlyChild;
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(/*! (webpack)/~/node-libs-browser/~/process/browser.js */ 3)))
-
-/***/ },
-/* 168 */
-/*!*********************************!*\
-  !*** ./src/client/app/grid.jsx ***!
-  \*********************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	var React = __webpack_require__(/*! react */ 162);
-	
-	var Grid = React.createClass({
-		displayName: 'Grid',
-	
-		render: function render() {
-			return React.createElement('div', { className: 'initial-grid' });
-		}
-	});
-	
-	module.exports = Grid;
 
 /***/ }
 /******/ ]);
