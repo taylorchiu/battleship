@@ -7,10 +7,8 @@ h3{
 }
 
 .initial-grid{
-	height: 400px;
-	width: 400px;
-	margin: 0 auto;
-	border: 1px solid black;
+	min-height: 400px;
+	min-width: 400px;
 }
 
 .button-new-board{
@@ -19,4 +17,36 @@ h3{
 	text-align: center;
 	display: block;
 	margin-bottom: 40px;
+}
+
+.row{
+	height: 40px;
+	text-align: center;
+	width: auto;
+}
+
+.row#row-header{
+	padding-bottom: 10px;
+
+}
+.row#row-header > .square{
+	border: none;
+	text-align: center;
+	padding: 0 1px;
+	color: black;
+}
+
+.square{
+	width: 40px;
+	min-height: 40px;
+	display: inline-block;
+	text-align: center;
+	line-height: 40px;
+	color: red;
+	border: 1px solid black;
+}
+
+.square#square-header{
+	border: none;
+	color: black;
 }

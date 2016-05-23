@@ -5,7 +5,6 @@ var Grid = require('./grid');
 var BattleshipApp = React.createClass({
 	getNewBoard: function(){
 		alert('Are you sure?');
-
 	},
 
 	render: function(){

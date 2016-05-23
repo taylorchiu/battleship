@@ -20867,16 +20867,111 @@
 	'use strict';
 	
 	var React = __webpack_require__(/*! react */ 162);
+	var Row = __webpack_require__(/*! ./row */ 169);
 	
 	var Grid = React.createClass({
 		displayName: 'Grid',
 	
+		GRID_SIZE: 10,
+		ROW_NAMES: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"],
+	
+		renderRows: function renderRows() {
+			var rowsArray = this.ROW_NAMES.slice(0, this.GRID_SIZE),
+			    self = this,
+			    rows;
+			rows = rowsArray.map(function (el) {
+				return React.createElement(Row, { key: rowsArray.indexOf(el),
+					id: 'row-' + el,
+					rowName: el,
+					gridSize: self.GRID_SIZE });
+			});
+			rows.unshift(React.createElement(Row, { key: 'header',
+				id: 'row-header',
+				gridSize: this.GRID_SIZE,
+				headerRow: true }));
+			return rows;
+		},
+	
 		render: function render() {
-			return React.createElement('div', { className: 'initial-grid' });
+			var rows = this.renderRows();
+			return React.createElement(
+				'div',
+				{ className: 'initial-grid' },
+				React.createElement('div', { className: 'top-labels' }),
+				rows
+			);
 		}
 	});
 	
 	module.exports = Grid;
+
+/***/ },
+/* 169 */
+/*!********************************!*\
+  !*** ./src/client/app/row.jsx ***!
+  \********************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var React = __webpack_require__(/*! react */ 162);
+	var Square = __webpack_require__(/*! ./square */ 170);
+	
+	var Row = React.createClass({
+		displayName: 'Row',
+	
+		renderSquares: function renderSquares() {
+			var squares = [],
+			    gridSize = this.props.gridSize;
+			// create the header column
+			squares.push(React.createElement(Square, { key: 0,
+				id: 'square-header',
+				value: this.props.rowName }));
+			for (var i = 1; i <= gridSize; i++) {
+				var value = this.props.headerRow ? i : '';
+				squares.push(React.createElement(Square, { key: i,
+					id: 'square-' + i,
+					value: value }));
+			};
+			return squares;
+		},
+	
+		render: function render() {
+			var squares = this.renderSquares();
+			return React.createElement(
+				'div',
+				{ className: 'row', id: this.props.id },
+				squares
+			);
+		}
+	});
+	
+	module.exports = Row;
+
+/***/ },
+/* 170 */
+/*!***********************************!*\
+  !*** ./src/client/app/square.jsx ***!
+  \***********************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var React = __webpack_require__(/*! react */ 162);
+	
+	var Square = React.createClass({
+		displayName: 'Square',
+	
+		render: function render() {
+			return React.createElement(
+				'div',
+				{ className: 'square', id: this.props.id },
+				this.props.value
+			);
+		}
+	});
+	
+	module.exports = Square;
 
 /***/ }
 /******/ ]);
