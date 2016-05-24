@@ -2,26 +2,23 @@ var React = require('react');
 var Row = require('./row');
 
 var Grid = React.createClass({
-	GRID_SIZE: 10,
-	ROW_NAMES: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
-						  "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"],
-
 	renderRows: function(){
-		var rowsArray = this.ROW_NAMES.slice(0, this.GRID_SIZE),
+		var rowsArray = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"],
 				self = this,
 				rows;
-		rows = rowsArray.map(function(el){
+		rows = rowsArray.map(function(el, index){
 			return(
-				<Row key={rowsArray.indexOf(el)}
+				<Row key={index}
 						 id={'row-'+el}
+						 rowIndex={index}
 						 rowName={el}
-						 gridSize={self.GRID_SIZE}/>
+						 gameBoard={self.props.gameBoard}/>
 			)
 		});
 		rows.unshift(<Row key='header'
 											id='row-header'
-											gridSize={this.GRID_SIZE}
-											headerRow={true}/>)
+											headerRow={true}
+											handleSelect={this.props.handleSelect}/>)
 		return rows;
 	},
 

@@ -3,17 +3,17 @@ var Square = require('./square');
 
 var Row = React.createClass({
 	renderSquares: function(){
-		var squares = [],
-				gridSize = this.props.gridSize;
+		var squares = [];
 		// create the header column
-		squares.push(<Square key={0}
+		squares.push(<Square key='header'
 												 id='square-header'
 												 value={this.props.rowName}/>);
-		for(var i = 1; i <= gridSize; i++){
-			var value = this.props.headerRow ? i : '';
+		for(var i = 0; i < 10; i++){
+			var value = this.props.headerRow ? i+1 : this.props.gameBoard[this.props.rowIndex][i];
 			squares.push(<Square key={i}
 													 id={'square-' + i}
-													 value={value}/>)
+													 value={value}
+													 handleSelect={this.props.handleSelect}/>)
 		};
 		return squares;
 	},

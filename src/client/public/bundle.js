@@ -58,9 +58,86 @@
 	var BattleshipApp = React.createClass({
 		displayName: 'BattleshipApp',
 	
-		getNewBoard: function getNewBoard() {
-			alert('Are you sure?');
+		// KEY: { 0: openWater,
+		// 			  1: ship,
+		// 			  2: damagedShip,
+		// 			  3: missedShot
+		// 			}
+	
+		BOARD: [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
+	
+		ORIENTATIONS: ['vertical', 'horizontal'],
+	
+		getInitialState: function getInitialState() {
+			return {
+				gameBoardA: this.BOARD.slice(),
+				gameBoardB: this.BOARD.slice()
+			};
 		},
+	
+		newGame: function newGame() {
+			alert('Are you sure?');
+			this.setState({
+				gameBoardA: this.placeShips(this.BOARD.slice()),
+				gameBoardB: this.placeShips(this.BOARD.slice())
+			});
+		},
+	
+		getRandomInt: function getRandomInt(min, max) {
+			// will return a random integer between the min and max (inclusive)
+			return Math.floor(Math.random() * (max - min + 1)) + min;
+		},
+	
+		placeShips: function placeShips(board) {
+			console.log('PLACING BOARD ' + board);
+			// 5 ships with lengths 5, 4, 4, 3, 2
+			var shipLengths = [5, 4, 4, 3, 2],
+			    orientation,
+			    startRow,
+			    startIndex,
+			    self = this;
+			shipLengths.forEach(function (length) {
+				console.log('PLACING SHIP LENGTH ' + length);
+				// randomly choose vertical or horizontal orientation of ship
+				orientation = self.ORIENTATIONS[self.getRandomInt(0, 1)];
+				if (orientation == 'vertical') {
+					// ship must start in top section going down
+					startRow = self.getRandomInt(0, 9 - length);
+					startIndex = self.getRandomInt(0, 9);
+					for (var i = startRow; i < startRow + length; i++) {
+						console.log('i:' + i);
+						console.log('startIndex:' + startIndex);
+						console.log('startRow:' + startRow);
+						if (board[i][startIndex] == 1) {
+							// ships can't intersect, find new starting point
+							console.log('oops theres gonna be a problem');
+						} else {
+							// place ship
+							board[i][startIndex] = 1;
+						}
+					}
+				} else if (orientation == 'horizontal') {
+					// ship must start in left section going right
+					startRow = self.getRandomInt(0, 9);
+					startIndex = self.getRandomInt(0, 9 - length);
+					for (var i = startRow; i < startRow + length; i++) {
+						console.log('i:' + i);
+						console.log('startIndex:' + startIndex);
+						console.log('startRow:' + startRow);
+						if (board[startRow][i] == 1) {
+							// ships can't intersect, find new starting point
+							console.log('oops theres gonna be a problem');
+						} else {
+							// place ship
+							board[startRow][i] = 1;
+						}
+					}
+				}
+			});
+			return board;
+		},
+	
+		handleSelect: function handleSelect() {},
 	
 		render: function render() {
 			return React.createElement(
@@ -73,10 +150,26 @@
 				),
 				React.createElement(
 					'button',
-					{ onClick: this.getNewBoard, className: 'button-new-board' },
+					{ onClick: this.newGame, className: 'button-new-board' },
 					'New Game'
 				),
-				React.createElement(Grid, null)
+				React.createElement(
+					'h4',
+					null,
+					'Player A'
+				),
+				React.createElement(Grid, { key: 'A',
+					handleSelect: this.handleSelect,
+					gameBoard: this.state.gameBoardA }),
+				React.createElement('br', null),
+				React.createElement(
+					'h4',
+					null,
+					'Player B'
+				),
+				React.createElement(Grid, { key: 'B',
+					handleSelect: this.handleSelect,
+					gameBoard: this.state.gameBoardB })
 			);
 		}
 	});
@@ -20872,23 +20965,21 @@
 	var Grid = React.createClass({
 		displayName: 'Grid',
 	
-		GRID_SIZE: 10,
-		ROW_NAMES: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"],
-	
 		renderRows: function renderRows() {
-			var rowsArray = this.ROW_NAMES.slice(0, this.GRID_SIZE),
+			var rowsArray = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"],
 			    self = this,
 			    rows;
-			rows = rowsArray.map(function (el) {
-				return React.createElement(Row, { key: rowsArray.indexOf(el),
+			rows = rowsArray.map(function (el, index) {
+				return React.createElement(Row, { key: index,
 					id: 'row-' + el,
+					rowIndex: index,
 					rowName: el,
-					gridSize: self.GRID_SIZE });
+					gameBoard: self.props.gameBoard });
 			});
 			rows.unshift(React.createElement(Row, { key: 'header',
 				id: 'row-header',
-				gridSize: this.GRID_SIZE,
-				headerRow: true }));
+				headerRow: true,
+				handleSelect: this.props.handleSelect }));
 			return rows;
 		},
 	
@@ -20921,17 +21012,17 @@
 		displayName: 'Row',
 	
 		renderSquares: function renderSquares() {
-			var squares = [],
-			    gridSize = this.props.gridSize;
+			var squares = [];
 			// create the header column
-			squares.push(React.createElement(Square, { key: 0,
+			squares.push(React.createElement(Square, { key: 'header',
 				id: 'square-header',
 				value: this.props.rowName }));
-			for (var i = 1; i <= gridSize; i++) {
-				var value = this.props.headerRow ? i : '';
+			for (var i = 0; i < 10; i++) {
+				var value = this.props.headerRow ? i + 1 : this.props.gameBoard[this.props.rowIndex][i];
 				squares.push(React.createElement(Square, { key: i,
 					id: 'square-' + i,
-					value: value }));
+					value: value,
+					handleSelect: this.props.handleSelect }));
 			};
 			return squares;
 		},
@@ -20965,7 +21056,9 @@
 		render: function render() {
 			return React.createElement(
 				'div',
-				{ className: 'square', id: this.props.id },
+				{ className: 'square',
+					id: this.props.id,
+					onClick: this.props.handleSelect },
 				this.props.value
 			);
 		}
