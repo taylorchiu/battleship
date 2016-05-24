@@ -32,10 +32,10 @@ var BattleshipApp = React.createClass({
   },
 
 	newGame: function(){
-		alert('Are you sure?');
+		var newBoardA = this.placeShips();
+				// newBoardB = this.placeShips();
 		this.setState({
-			gameBoardA: this.placeShips(this.BOARD.slice()),
-			gameBoardB: this.placeShips(this.BOARD.slice())
+			gameBoardA: newBoardA
 		});
 	},
 
@@ -44,31 +44,34 @@ var BattleshipApp = React.createClass({
 	  return Math.floor(Math.random() * (max - min + 1)) + min;
 	},
 
-	placeShips: function(board){
-		console.log('PLACING BOARD ' + board);
+	placeShips: function(){
 		// 5 ships with lengths 5, 4, 4, 3, 2
 		var shipLengths = [5, 4, 4, 3, 2],
 				orientation,
 				startRow,
 				startIndex,
-				self = this;
+				self = this,
+				board = this.BOARD.slice();
 		shipLengths.forEach(function(length){
-					console.log('PLACING SHIP LENGTH ' + length);
+			console.log('PLACING SHIP LENGTH ' + length);
+			// save a copy of the board in case we need to undo changes
+			var originalBoard = board;
 			// randomly choose vertical or horizontal orientation of ship
-				orientation = self.ORIENTATIONS[self.getRandomInt(0,1)]
+			orientation = self.ORIENTATIONS[self.getRandomInt(0,1)]
 			if(orientation == 'vertical'){
 				// ship must start in top section going down
-				startRow = self.getRandomInt(0,9-length);
 				startIndex = self.getRandomInt(0,9);
+				startRow = self.getRandomInt(0,9-length);
 				for(var i = startRow; i < startRow + length; i++){
-					console.log('i:' + i);
-					console.log('startIndex:' + startIndex);
-					console.log('startRow:' + startRow);
 					if (board[i][startIndex] == 1){
-						// ships can't intersect, find new starting point
+						// ships can't intersect
+						// start again with new starting point
 						console.log('oops theres gonna be a problem');
+						startRow = self.getRandomInt(0,9-length);
+						// this should be recursive until ship is placed
 					}else{
-						// place ship
+						// place ship piece
+						console.log('placing vertical ship: ' + i + startIndex);
 						board[i][startIndex] = 1;
 					}
 				}
@@ -76,22 +79,25 @@ var BattleshipApp = React.createClass({
 				// ship must start in left section going right
 				startRow = self.getRandomInt(0,9);
 				startIndex = self.getRandomInt(0,9-length);
-				for(var i = startRow; i < startRow + length; i++){
-					console.log('i:' + i);
-					console.log('startIndex:' + startIndex);
-					console.log('startRow:' + startRow);
+				for(var i = startIndex; i < startIndex + length; i++){
 					if(board[startRow][i] == 1){
-						// ships can't intersect, find new starting point
+						// ships can't intersect
+						// start again with new starting point
 						console.log('oops theres gonna be a problem');
+						startIndex = self.getRandomInt(0,9-length);
+						// this should be recursive until ship is placed
 					}else{
 						// place ship
+						console.log('placing horizontal ship: ' + startRow + i);
 						board[startRow][i] = 1;
 					}
 				}
 			}
-		})	
+		});
+		console.log('board ' + board);	
 		return board;
 	},
+
 
 	handleSelect: function(){
 
