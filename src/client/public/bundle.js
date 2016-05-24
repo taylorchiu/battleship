@@ -91,54 +91,74 @@
 		placeShips: function placeShips() {
 			// 5 ships with lengths 5, 4, 4, 3, 2
 			var shipLengths = [5, 4, 4, 3, 2],
-			    orientation,
-			    startRow,
-			    startIndex,
 			    self = this,
 			    board = this.BOARD.slice();
+	
 			shipLengths.forEach(function (length) {
-				console.log('PLACING SHIP LENGTH ' + length);
-				// save a copy of the board in case we need to undo changes
-				var originalBoard = board;
-				// randomly choose vertical or horizontal orientation of ship
-				orientation = self.ORIENTATIONS[self.getRandomInt(0, 1)];
+				var orientation = self.ORIENTATIONS[self.getRandomInt(0, 1)],
+				    startRow,
+				    startIndex;
 				if (orientation == 'vertical') {
-					// ship must start in top section going down
-					startIndex = self.getRandomInt(0, 9);
 					startRow = self.getRandomInt(0, 9 - length);
-					for (var i = startRow; i < startRow + length; i++) {
-						if (board[i][startIndex] == 1) {
-							// ships can't intersect
-							// start again with new starting point
-							console.log('oops theres gonna be a problem');
-							startRow = self.getRandomInt(0, 9 - length);
-							// this should be recursive until ship is placed
-						} else {
-								// place ship piece
-								console.log('placing vertical ship: ' + i + startIndex);
-								board[i][startIndex] = 1;
-							}
-					}
+					startIndex = self.getRandomInt(0, 9);
 				} else if (orientation == 'horizontal') {
-					// ship must start in left section going right
 					startRow = self.getRandomInt(0, 9);
 					startIndex = self.getRandomInt(0, 9 - length);
-					for (var i = startIndex; i < startIndex + length; i++) {
-						if (board[startRow][i] == 1) {
-							// ships can't intersect
-							// start again with new starting point
-							console.log('oops theres gonna be a problem');
-							startIndex = self.getRandomInt(0, 9 - length);
-							// this should be recursive until ship is placed
-						} else {
-								// place ship
-								console.log('placing horizontal ship: ' + startRow + i);
-								board[startRow][i] = 1;
-							}
+				}
+				board = self.placeShip(board, orientation, length, startRow, startIndex);
+			});
+			return board;
+		},
+	
+		placeShip: function placeShip(board, orientation, length, startRow, startIndex) {
+			// recursively place each ship until all ships are placed and don't overlap
+			var shipPlaced,
+			    self = this,
+			    newBoard;
+			while (!shipPlaced) {
+				if (self.checkOverlap(board, orientation, length, startRow, startIndex) == false) {
+					shipPlaced = true;
+					newBoard = self.buildShip(board, orientation, length, startRow, startIndex);
+				} else {
+					startIndex = self.getRandomInt(0, 9);
+					startRow = self.getRandomInt(0, 9 - length);
+					self.placeShip(board, orientation, length, startRow, startIndex);
+					newBoard = board;
+				}
+				return shipPlaced = newBoard;
+			}
+			return newBoard;
+		},
+	
+		checkOverlap: function checkOverlap(board, orientation, length, startRow, startIndex) {
+			// make sure ships being placed on the board don't overlap
+			var overlap = false;
+			if (orientation == 'vertical') {
+				for (var i = startRow; i < startRow + length; i++) {
+					if (board[i][startIndex] == 1) {
+						overlap = true;
 					}
 				}
-			});
-			console.log('board ' + board);
+			} else if (orientation == 'horizontal') {
+				for (var i = startIndex; i < startIndex + length; i++) {
+					if (board[startRow][i] == 1) {
+						overlap = true;
+					}
+				}
+			}
+			return overlap;
+		},
+	
+		buildShip: function buildShip(board, orientation, length, startRow, startIndex) {
+			if (orientation == 'vertical') {
+				for (var i = startRow; i < startRow + length; i++) {
+					board[i][startIndex] = 1;
+				}
+			} else if (orientation == 'horizontal') {
+				for (var i = startIndex; i < startIndex + length; i++) {
+					board[startRow][i] = 1;
+				}
+			}
 			return board;
 		},
 	
@@ -21017,13 +21037,18 @@
 		displayName: 'Row',
 	
 		renderSquares: function renderSquares() {
-			var squares = [];
+			var squares = [],
+			    value;
 			// create the header column
 			squares.push(React.createElement(Square, { key: 'header',
 				id: 'square-header',
 				value: this.props.rowName }));
 			for (var i = 0; i < 10; i++) {
-				var value = this.props.headerRow ? i + 1 : this.props.gameBoard[this.props.rowIndex][i];
+				if (this.props.headerRow) {
+					value = i + 1;
+				} else {
+					value = this.props.gameBoard[this.props.rowIndex][i];
+				}
 				squares.push(React.createElement(Square, { key: i,
 					id: 'square-' + i,
 					value: value,

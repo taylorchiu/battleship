@@ -3,13 +3,18 @@ var Square = require('./square');
 
 var Row = React.createClass({
 	renderSquares: function(){
-		var squares = [];
+		var squares = [],
+				value;
 		// create the header column
 		squares.push(<Square key='header'
 												 id='square-header'
 												 value={this.props.rowName}/>);
 		for(var i = 0; i < 10; i++){
-			var value = this.props.headerRow ? i+1 : this.props.gameBoard[this.props.rowIndex][i];
+			if(this.props.headerRow){
+				value = i+1
+			}else{
+				value = this.props.gameBoard[this.props.rowIndex][i];
+			}
 			squares.push(<Square key={i}
 													 id={'square-' + i}
 													 value={value}
