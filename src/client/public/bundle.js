@@ -60,6 +60,7 @@
 	
 	
 		ORIENTATIONS: ['vertical', 'horizontal'],
+		SHIP_LENGTHS: [5, 4, 4, 3, 2], // 5 ships with lengths 5, 4, 4, 3, 2
 	
 		getInitialState: function getInitialState() {
 			return {
@@ -69,8 +70,8 @@
 		},
 	
 		newGame: function newGame() {
-			var newBoardA = this.placeShips(this.state.gameBoardA),
-			    newBoardB = this.placeShips(this.state.gameBoardB);
+			var newBoardA = this.placeShips(this.getInitialState().gameBoardA),
+			    newBoardB = this.placeShips(this.getInitialState().gameBoardB);
 			this.setState({
 				gameBoardA: newBoardA,
 				gameBoardB: newBoardB
@@ -83,8 +84,7 @@
 		},
 	
 		placeShips: function placeShips(board) {
-			// 5 ships with lengths 5, 4, 4, 3, 2
-			var shipLengths = [5, 4, 4, 3, 2],
+			var shipLengths = this.SHIP_LENGTHS,
 			    self = this;
 	
 			shipLengths.forEach(function (length) {
@@ -155,6 +155,32 @@
 			return board;
 		},
 	
+		findSum: function findSum(array) {
+			var sum = array.reduce(function (a, b) {
+				return a + b;
+			});
+			return sum;
+		},
+	
+		flattenArray: function flattenArray(nestedArray) {
+			var newArray = nestedArray.reduce(function (a, b) {
+				return a.concat(b);
+			}, []);
+			return newArray;
+		},
+	
+		determineWinner: function determineWinner() {
+			// TODO: refactor to know when each ship was sunk
+			var total_possible = 2 * this.findSum(this.SHIP_LENGTHS);
+			var playerA = this.findSum(this.flattenArray(this.state.gameBoardA)),
+			    playerB = this.findSum(this.flattenArray(this.state.gameBoardB));
+			if (playerA == total_possible) {
+				alert('Player A is the winner!');
+			} else if (playerB == total_possible) {
+				alert('Player B is the winner!');
+			}
+		},
+	
 		handleSelect: function handleSelect(square) {
 			var newState,
 			    gameBoard = square.props.gameBoard,
@@ -163,23 +189,24 @@
 			switch (status) {
 				case 0:
 					newStatus += 3;
-					alert('Missed!');
+					console.log('Missed!');
 					break;
 				case 1:
 					newStatus += 1;
-					alert('Boom! You hit a ship');
+					console.log('Boom! You hit a ship');
 					break;
 				case 2:
-					alert("Bully, don't hit me when I'm down");
+					console.log('You already shot here, silly');
 					break;
 				case 3:
-					alert('You already shot here, silly');
+					console.log('You already shot here, silly');
 					break;
 			}
 			gameBoard[square.props.row][square.props.index] = newStatus;
 			this.setState({
 				gameBoard: gameBoard
 			});
+			this.determineWinner();
 		},
 	
 		render: function render() {
