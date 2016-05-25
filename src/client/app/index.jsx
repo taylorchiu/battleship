@@ -3,24 +3,6 @@ import {render} from 'react-dom';
 var Grid = require('./grid');
 
 var BattleshipApp = React.createClass({
-	// KEY: { 0: openWater,
-	// 			  1: ship,
-	// 			  2: damagedShip,
-	// 			  3: missedShot
-	// 			}
-
-	// BOARD: [
-	// 				[0,0,0,0,0,0,0,0,0,0],
-	// 				[0,0,0,0,0,0,0,0,0,0],
-	// 				[0,0,0,0,0,0,0,0,0,0],
-	// 				[0,0,0,0,0,0,0,0,0,0],
-	// 				[0,0,0,0,0,0,0,0,0,0],
-	// 				[0,0,0,0,0,0,0,0,0,0],
-	// 				[0,0,0,0,0,0,0,0,0,0],
-	// 				[0,0,0,0,0,0,0,0,0,0],
-	// 				[0,0,0,0,0,0,0,0,0,0],
-	// 				[0,0,0,0,0,0,0,0,0,0]
-	// 			],
 
 	ORIENTATIONS: [ 'vertical', 'horizontal'],
 
@@ -140,8 +122,31 @@ var BattleshipApp = React.createClass({
 		return board;
 	},
 
-	handleSelect: function(){
-
+	handleSelect: function(square){
+		var newState,
+				gameBoard = square.props.gameBoard,
+				status = gameBoard[square.props.row][square.props.index],
+		 		newStatus = status;
+    switch(status){
+      case 0:
+        newStatus += 3;
+        alert('Missed!');
+        break;
+      case 1:
+        newStatus += 1;
+        alert('Boom! You hit a ship');
+        break;
+      case 2:
+        alert("Bully, don't hit me when I'm down");
+        break;
+      case 3:
+        alert('You already shot here, silly');
+        break;
+    }
+    gameBoard[square.props.row][square.props.index] = newStatus;
+    this.setState({
+    	gameBoard: gameBoard
+    })
 	},
 
 	render: function(){

@@ -12,13 +12,14 @@ var Grid = React.createClass({
 						 id={'row-'+el}
 						 rowIndex={index}
 						 rowName={el}
-						 gameBoard={self.props.gameBoard}/>
+						 gameBoard={self.props.gameBoard}
+						 handleSelect={self.props.handleSelect}/>
 			)
 		});
 		rows.unshift(<Row key='header'
 											id='row-header'
 											headerRow={true}
-											handleSelect={this.props.handleSelect}/>)
+											handleSelect={self.props.handleSelect}/>)
 		return rows;
 	},
 

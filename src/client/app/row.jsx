@@ -9,7 +9,8 @@ var Row = React.createClass({
 		// create the header column
 		squares.push(<Square key='header'
 												 id='square-header'
-												 value={this.props.rowName}/>);
+												 value={this.props.rowName}
+												 handleSelect={this.props.handleSelect}/>);
 		for(var i = 0; i < 10; i++){
 			if(this.props.headerRow){
 				value = i+1;
@@ -22,6 +23,9 @@ var Row = React.createClass({
 													 id={'square-' + i}
 													 value={value}
 													 status={status}
+													 row={this.props.rowIndex}
+													 index={i}
+													 gameBoard={this.props.gameBoard}
 													 handleSelect={this.props.handleSelect}/>)
 		};
 		return squares;

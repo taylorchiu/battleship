@@ -20,11 +20,16 @@ var Square = React.createClass({
     return squareClasses;
   },
 
+  handleClick: function(evt){
+    evt.preventDefault;
+    this.props.handleSelect(this);
+  },
+
   render: function(){
     return(
 			<div className={this.getClasses()}
 					 id={this.props.id}
-					 onClick={this.props.handleSelect}>
+					 onClick={this.handleClick}>
 				{this.props.value}
 			</div>
 		)

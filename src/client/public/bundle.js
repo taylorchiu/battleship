@@ -58,24 +58,6 @@
 	var BattleshipApp = React.createClass({
 		displayName: 'BattleshipApp',
 	
-		// KEY: { 0: openWater,
-		// 			  1: ship,
-		// 			  2: damagedShip,
-		// 			  3: missedShot
-		// 			}
-	
-		// BOARD: [
-		// 				[0,0,0,0,0,0,0,0,0,0],
-		// 				[0,0,0,0,0,0,0,0,0,0],
-		// 				[0,0,0,0,0,0,0,0,0,0],
-		// 				[0,0,0,0,0,0,0,0,0,0],
-		// 				[0,0,0,0,0,0,0,0,0,0],
-		// 				[0,0,0,0,0,0,0,0,0,0],
-		// 				[0,0,0,0,0,0,0,0,0,0],
-		// 				[0,0,0,0,0,0,0,0,0,0],
-		// 				[0,0,0,0,0,0,0,0,0,0],
-		// 				[0,0,0,0,0,0,0,0,0,0]
-		// 			],
 	
 		ORIENTATIONS: ['vertical', 'horizontal'],
 	
@@ -173,7 +155,32 @@
 			return board;
 		},
 	
-		handleSelect: function handleSelect() {},
+		handleSelect: function handleSelect(square) {
+			var newState,
+			    gameBoard = square.props.gameBoard,
+			    status = gameBoard[square.props.row][square.props.index],
+			    newStatus = status;
+			switch (status) {
+				case 0:
+					newStatus += 3;
+					alert('Missed!');
+					break;
+				case 1:
+					newStatus += 1;
+					alert('Boom! You hit a ship');
+					break;
+				case 2:
+					alert("Bully, don't hit me when I'm down");
+					break;
+				case 3:
+					alert('You already shot here, silly');
+					break;
+			}
+			gameBoard[square.props.row][square.props.index] = newStatus;
+			this.setState({
+				gameBoard: gameBoard
+			});
+		},
 	
 		render: function render() {
 			return React.createElement(
@@ -21010,12 +21017,13 @@
 					id: 'row-' + el,
 					rowIndex: index,
 					rowName: el,
-					gameBoard: self.props.gameBoard });
+					gameBoard: self.props.gameBoard,
+					handleSelect: self.props.handleSelect });
 			});
 			rows.unshift(React.createElement(Row, { key: 'header',
 				id: 'row-header',
 				headerRow: true,
-				handleSelect: this.props.handleSelect }));
+				handleSelect: self.props.handleSelect }));
 			return rows;
 		},
 	
@@ -21054,7 +21062,8 @@
 			// create the header column
 			squares.push(React.createElement(Square, { key: 'header',
 				id: 'square-header',
-				value: this.props.rowName }));
+				value: this.props.rowName,
+				handleSelect: this.props.handleSelect }));
 			for (var i = 0; i < 10; i++) {
 				if (this.props.headerRow) {
 					value = i + 1;
@@ -21067,6 +21076,9 @@
 					id: 'square-' + i,
 					value: value,
 					status: status,
+					row: this.props.rowIndex,
+					index: i,
+					gameBoard: this.props.gameBoard,
 					handleSelect: this.props.handleSelect }));
 			};
 			return squares;
@@ -21117,12 +21129,17 @@
 	    return squareClasses;
 	  },
 	
+	  handleClick: function handleClick(evt) {
+	    evt.preventDefault;
+	    this.props.handleSelect(this);
+	  },
+	
 	  render: function render() {
 	    return React.createElement(
 	      'div',
 	      { className: this.getClasses(),
 	        id: this.props.id,
-	        onClick: this.props.handleSelect },
+	        onClick: this.handleClick },
 	      this.props.value
 	    );
 	  }
