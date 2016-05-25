@@ -26,7 +26,8 @@ var Row = React.createClass({
 													 row={this.props.rowIndex}
 													 index={i}
 													 gameBoard={this.props.gameBoard}
-													 handleSelect={this.props.handleSelect}/>)
+													 handleSelect={this.props.handleSelect}
+													 enemyBoard={this.props.enemyBoard}/>)
 		};
 		return squares;
 	},

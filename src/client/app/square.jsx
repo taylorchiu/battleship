@@ -2,20 +2,34 @@ var React = require('react');
 
 var Square = React.createClass({
 	getClasses: function(){
-    var squareClasses = 'square'
-    switch(this.props.status){
-      case 0:
-        squareClasses += ' open';
-        break;
-      case 1:
-        squareClasses += ' ship';
-        break;
-      case 2:
-        squareClasses += ' damage';
-        break;
-      case 3:
-        squareClasses += ' missed';
-        break;
+    var squareClasses;
+    if(this.props.enemyBoard){
+      // don't reveal the opponent's board
+      squareClasses = 'square enemy-square';
+      switch(this.props.status){
+        case 2:
+          squareClasses += ' ship';
+          break;
+        case 3:
+          squareClasses += ' missed';
+          break;
+      }
+    }else{
+      squareClasses = 'square';
+      switch(this.props.status){
+        case 0:
+          squareClasses += ' open';
+          break;
+        case 1:
+          squareClasses += ' ship';
+          break;
+        case 2:
+          squareClasses += ' damage';
+          break;
+        case 3:
+          squareClasses += ' open';
+          break;
+      }
     }
     return squareClasses;
   },

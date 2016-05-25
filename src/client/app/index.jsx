@@ -1,6 +1,6 @@
 var React = require('react');
 import {render} from 'react-dom';
-var Grid = require('./grid');
+var Turn = require('./turn');
 
 var BattleshipApp = React.createClass({
 
@@ -33,8 +33,13 @@ var BattleshipApp = React.createClass({
 										[0,0,0,0,0,0,0,0,0,0],
 										[0,0,0,0,0,0,0,0,0,0],
 										[0,0,0,0,0,0,0,0,0,0]
-									]
+									],
+			currentTurn: ''
     }
+  },
+
+  componentWillUpdate: function(nextProps, nextState) {
+  	this.determineWinner();
   },
 
 	newGame: function(){
@@ -42,7 +47,8 @@ var BattleshipApp = React.createClass({
 				newBoardB = this.placeShips(this.getInitialState().gameBoardB);
 		this.setState({
 			gameBoardA: newBoardA,
-			gameBoardB: newBoardB
+			gameBoardB: newBoardB,
+			currentTurn: 'A'
 		});
 	},
 
@@ -137,30 +143,47 @@ var BattleshipApp = React.createClass({
 		return newArray;
 	},
 
+	instancesInArray: function(array, value){
+		var total = array.reduce(function(count, el) {
+		    return count + (el === value);
+		}, 0);
+		return total;
+	},
+
 	determineWinner: function(){
 		// TODO: refactor to know when each ship was sunk
-		var total_possible = (2*this.findSum(this.SHIP_LENGTHS));
-		var playerA = this.findSum(this.flattenArray(this.state.gameBoardA)),
-				playerB = this.findSum(this.flattenArray(this.state.gameBoardB));
-		if(playerA == total_possible){
+		var total_possible = this.findSum(this.SHIP_LENGTHS);
+		var playerA = this.instancesInArray(this.flattenArray(this.state.gameBoardB), 2),
+				playerB = this.instancesInArray(this.flattenArray(this.state.gameBoardA), 2);
+		if(playerA >= total_possible){
 			alert('Player A is the winner!');
-		}else if(playerB == total_possible){
+			this.newGame();
+		}else if(playerB >= total_possible){
 			alert('Player B is the winner!');
+			this.newGame();
 		}
 	},
 
 	handleSelect: function(square){
+		// STATUS_KEY: {
+		// 								0: open,
+		// 								1: ship,
+		// 								2: damage,
+		// 								3: missed
+		// 							}
 		var newState,
 				gameBoard = square.props.gameBoard,
 				status = gameBoard[square.props.row][square.props.index],
-		 		newStatus = status;
+		 		newStatus = status,
+		 		currentTurn = this.state.currentTurn,
+		 		enemyBoard = this.state.currentTurn == 'A' ? this.state.gameBoardA : this.state.gameBoardB;
     switch(status){
       case 0:
-        newStatus += 3;
+        newStatus = 3;
         console.log('Missed!');
         break;
       case 1:
-        newStatus += 1;
+        newStatus = 2;
         console.log('Boom! You hit a ship');
         break;
       case 2:
@@ -172,25 +195,43 @@ var BattleshipApp = React.createClass({
     }
     gameBoard[square.props.row][square.props.index] = newStatus;
     this.setState({
-    	gameBoard: gameBoard
+    	gameBoard: gameBoard,
+    	enemyBoard: enemyBoard
     });
-    this.determineWinner();
+	},
+
+	hideBoard: function(){
+		this.setState({
+			boardHidden: true
+		})
+	},
+
+	showNextTurn: function(){
+		this.setState({
+			boardHidden: false,
+			currentTurn: this.state.currentTurn == 'A' ? 'B' : 'A'
+		})
 	},
 
 	render: function(){
+		var buttonClasses = this.state.boardHidden ? 'button-visible' : 'button-hidden';
 		return(
-			<div>
+			<div className='game-body'>
 				<h3> Battleship! </h3>
-				<button onClick={this.newGame} className='button-new-board'>New Game</button>
-				<h4>Player A</h4>
-				<Grid key='A'
-							handleSelect={this.handleSelect}
-							gameBoard={this.state.gameBoardA}/>
-				<br/>
-				<h4>Player B</h4>
-				<Grid key='B'
-							handleSelect={this.handleSelect}
-							gameBoard={this.state.gameBoardB}/>
+				<button onClick={this.newGame}>New Game</button>
+				<div className='key'>
+					Key
+					<p className='ship'>Your Ships</p>
+					<p className='open'>Open Water</p>
+					<p className='damage'>Damage to Your Ship</p>
+				</div>
+				<Turn handleSelect={this.handleSelect}
+							currentTurn={this.state.currentTurn}
+							gameBoardA={this.state.gameBoardA}
+							gameBoardB={this.state.gameBoardB}
+							boardHidden={this.state.boardHidden}
+							hideBoard={this.hideBoard}/>
+				<button onClick={this.showNextTurn} className={buttonClasses}>Show Next Turn</button>
 			</div>
 		)
 	}

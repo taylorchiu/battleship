@@ -1,9 +1,27 @@
-h3{
+.game-body{
 	margin: 0 auto;
-	color: magenta;
-	max-width: 400px;
+	max-width: 800px;
 	text-align: center;
 	padding: 40px;
+}
+
+.key{
+	width: 200px;
+}
+
+.current-turn, .button-visible{
+	display: block;
+}
+
+.current-turn.hidden, .button-hidden{
+	display: none;
+}
+
+button{
+	margin-top: 40px;
+	width: 200px;
+	background-color: teal;
+	color: white;
 }
 
 .initial-grid{
@@ -51,18 +69,22 @@ h3{
 	color: black;
 }
 
-.square.ship{
+.ship, .enemy-square.ship{
 	background-color: gray;
 }
 
-.square.open{
+.open, .enemy-square.missed{
 	background-color: lightblue;
 }
 
-.square.damage{
+.damage{
 	background-color: red;
 }
 
-.square.missed{
+.missed{
 	background-color: teal;
+}
+
+.enemy-square{
+	background-color: white;
 }

@@ -13,7 +13,8 @@ var Grid = React.createClass({
 						 rowIndex={index}
 						 rowName={el}
 						 gameBoard={self.props.gameBoard}
-						 handleSelect={self.props.handleSelect}/>
+						 handleSelect={self.props.handleSelect}
+						 enemyBoard={self.props.enemyBoard}/>
 			)
 		});
 		rows.unshift(<Row key='header'
@@ -27,8 +28,6 @@ var Grid = React.createClass({
 		var rows = this.renderRows();
 		return(
 			<div className='initial-grid'>
-				<div className='top-labels'>
-				</div>
 				{rows}
 			</div>
 		)

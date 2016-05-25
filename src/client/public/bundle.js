@@ -53,7 +53,7 @@
 	
 	var React = __webpack_require__(/*! react */ 162);
 	
-	var Grid = __webpack_require__(/*! ./grid */ 168);
+	var Turn = __webpack_require__(/*! ./turn */ 168);
 	
 	var BattleshipApp = React.createClass({
 		displayName: 'BattleshipApp',
@@ -65,8 +65,13 @@
 		getInitialState: function getInitialState() {
 			return {
 				gameBoardA: [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
-				gameBoardB: [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+				gameBoardB: [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
+				currentTurn: ''
 			};
+		},
+	
+		componentWillUpdate: function componentWillUpdate(nextProps, nextState) {
+			this.determineWinner();
 		},
 	
 		newGame: function newGame() {
@@ -74,7 +79,8 @@
 			    newBoardB = this.placeShips(this.getInitialState().gameBoardB);
 			this.setState({
 				gameBoardA: newBoardA,
-				gameBoardB: newBoardB
+				gameBoardB: newBoardB,
+				currentTurn: 'A'
 			});
 		},
 	
@@ -169,30 +175,47 @@
 			return newArray;
 		},
 	
+		instancesInArray: function instancesInArray(array, value) {
+			var total = array.reduce(function (count, el) {
+				return count + (el === value);
+			}, 0);
+			return total;
+		},
+	
 		determineWinner: function determineWinner() {
 			// TODO: refactor to know when each ship was sunk
-			var total_possible = 2 * this.findSum(this.SHIP_LENGTHS);
-			var playerA = this.findSum(this.flattenArray(this.state.gameBoardA)),
-			    playerB = this.findSum(this.flattenArray(this.state.gameBoardB));
-			if (playerA == total_possible) {
+			var total_possible = this.findSum(this.SHIP_LENGTHS);
+			var playerA = this.instancesInArray(this.flattenArray(this.state.gameBoardB), 2),
+			    playerB = this.instancesInArray(this.flattenArray(this.state.gameBoardA), 2);
+			if (playerA >= total_possible) {
 				alert('Player A is the winner!');
-			} else if (playerB == total_possible) {
+				this.newGame();
+			} else if (playerB >= total_possible) {
 				alert('Player B is the winner!');
+				this.newGame();
 			}
 		},
 	
 		handleSelect: function handleSelect(square) {
+			// STATUS_KEY: {
+			// 								0: open,
+			// 								1: ship,
+			// 								2: damage,
+			// 								3: missed
+			// 							}
 			var newState,
 			    gameBoard = square.props.gameBoard,
 			    status = gameBoard[square.props.row][square.props.index],
-			    newStatus = status;
+			    newStatus = status,
+			    currentTurn = this.state.currentTurn,
+			    enemyBoard = this.state.currentTurn == 'A' ? this.state.gameBoardA : this.state.gameBoardB;
 			switch (status) {
 				case 0:
-					newStatus += 3;
+					newStatus = 3;
 					console.log('Missed!');
 					break;
 				case 1:
-					newStatus += 1;
+					newStatus = 2;
 					console.log('Boom! You hit a ship');
 					break;
 				case 2:
@@ -204,15 +227,29 @@
 			}
 			gameBoard[square.props.row][square.props.index] = newStatus;
 			this.setState({
-				gameBoard: gameBoard
+				gameBoard: gameBoard,
+				enemyBoard: enemyBoard
 			});
-			this.determineWinner();
+		},
+	
+		hideBoard: function hideBoard() {
+			this.setState({
+				boardHidden: true
+			});
+		},
+	
+		showNextTurn: function showNextTurn() {
+			this.setState({
+				boardHidden: false,
+				currentTurn: this.state.currentTurn == 'A' ? 'B' : 'A'
+			});
 		},
 	
 		render: function render() {
+			var buttonClasses = this.state.boardHidden ? 'button-visible' : 'button-hidden';
 			return React.createElement(
 				'div',
-				null,
+				{ className: 'game-body' },
 				React.createElement(
 					'h3',
 					null,
@@ -220,26 +257,40 @@
 				),
 				React.createElement(
 					'button',
-					{ onClick: this.newGame, className: 'button-new-board' },
+					{ onClick: this.newGame },
 					'New Game'
 				),
 				React.createElement(
-					'h4',
-					null,
-					'Player A'
+					'div',
+					{ className: 'key' },
+					'Key',
+					React.createElement(
+						'p',
+						{ className: 'ship' },
+						'Your Ships'
+					),
+					React.createElement(
+						'p',
+						{ className: 'open' },
+						'Open Water'
+					),
+					React.createElement(
+						'p',
+						{ className: 'damage' },
+						'Damage to Your Ship'
+					)
 				),
-				React.createElement(Grid, { key: 'A',
-					handleSelect: this.handleSelect,
-					gameBoard: this.state.gameBoardA }),
-				React.createElement('br', null),
+				React.createElement(Turn, { handleSelect: this.handleSelect,
+					currentTurn: this.state.currentTurn,
+					gameBoardA: this.state.gameBoardA,
+					gameBoardB: this.state.gameBoardB,
+					boardHidden: this.state.boardHidden,
+					hideBoard: this.hideBoard }),
 				React.createElement(
-					'h4',
-					null,
-					'Player B'
-				),
-				React.createElement(Grid, { key: 'B',
-					handleSelect: this.handleSelect,
-					gameBoard: this.state.gameBoardB })
+					'button',
+					{ onClick: this.showNextTurn, className: buttonClasses },
+					'Show Next Turn'
+				)
 			);
 		}
 	});
@@ -21023,6 +21074,66 @@
 /***/ },
 /* 168 */
 /*!*********************************!*\
+  !*** ./src/client/app/turn.jsx ***!
+  \*********************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var React = __webpack_require__(/*! react */ 162);
+	var Grid = __webpack_require__(/*! ./grid */ 169);
+	
+	var Turn = React.createClass({
+	  displayName: 'Turn',
+	
+	
+	  render: function render() {
+	    var header = 'Current Player: ' + this.props.currentTurn,
+	        gameBoard = this.props.currentTurn == 'A' ? this.props.gameBoardA : this.props.gameBoardB,
+	        enemyBoard = this.props.currentTurn == 'A' ? this.props.gameBoardB : this.props.gameBoardA,
+	        boardClasses = this.props.boardHidden ? 'current-turn hidden' : 'current-turn';
+	
+	    return React.createElement(
+	      'div',
+	      { className: boardClasses },
+	      React.createElement(
+	        'h4',
+	        null,
+	        header
+	      ),
+	      React.createElement(
+	        'h5',
+	        null,
+	        'Your Ships'
+	      ),
+	      React.createElement(Grid, { key: this.props.currentTurn,
+	        gameBoard: gameBoard,
+	        currentTurn: this.props.currentTurn }),
+	      React.createElement('br', null),
+	      React.createElement(
+	        'h5',
+	        null,
+	        'Enemy Ships'
+	      ),
+	      React.createElement(Grid, { key: 'enemy',
+	        enemyBoard: enemyBoard,
+	        handleSelect: this.props.handleSelect,
+	        gameBoard: enemyBoard,
+	        currentTurn: this.props.currentTurn }),
+	      React.createElement(
+	        'button',
+	        { onClick: this.props.hideBoard },
+	        'Hide Board and Switch Players'
+	      )
+	    );
+	  }
+	});
+	
+	module.exports = Turn;
+
+/***/ },
+/* 169 */
+/*!*********************************!*\
   !*** ./src/client/app/grid.jsx ***!
   \*********************************/
 /***/ function(module, exports, __webpack_require__) {
@@ -21030,7 +21141,7 @@
 	'use strict';
 	
 	var React = __webpack_require__(/*! react */ 162);
-	var Row = __webpack_require__(/*! ./row */ 169);
+	var Row = __webpack_require__(/*! ./row */ 170);
 	
 	var Grid = React.createClass({
 		displayName: 'Grid',
@@ -21045,7 +21156,8 @@
 					rowIndex: index,
 					rowName: el,
 					gameBoard: self.props.gameBoard,
-					handleSelect: self.props.handleSelect });
+					handleSelect: self.props.handleSelect,
+					enemyBoard: self.props.enemyBoard });
 			});
 			rows.unshift(React.createElement(Row, { key: 'header',
 				id: 'row-header',
@@ -21059,7 +21171,6 @@
 			return React.createElement(
 				'div',
 				{ className: 'initial-grid' },
-				React.createElement('div', { className: 'top-labels' }),
 				rows
 			);
 		}
@@ -21068,7 +21179,7 @@
 	module.exports = Grid;
 
 /***/ },
-/* 169 */
+/* 170 */
 /*!********************************!*\
   !*** ./src/client/app/row.jsx ***!
   \********************************/
@@ -21077,7 +21188,7 @@
 	'use strict';
 	
 	var React = __webpack_require__(/*! react */ 162);
-	var Square = __webpack_require__(/*! ./square */ 170);
+	var Square = __webpack_require__(/*! ./square */ 171);
 	
 	var Row = React.createClass({
 		displayName: 'Row',
@@ -21106,7 +21217,8 @@
 					row: this.props.rowIndex,
 					index: i,
 					gameBoard: this.props.gameBoard,
-					handleSelect: this.props.handleSelect }));
+					handleSelect: this.props.handleSelect,
+					enemyBoard: this.props.enemyBoard }));
 			};
 			return squares;
 		},
@@ -21124,7 +21236,7 @@
 	module.exports = Row;
 
 /***/ },
-/* 170 */
+/* 171 */
 /*!***********************************!*\
   !*** ./src/client/app/square.jsx ***!
   \***********************************/
@@ -21138,20 +21250,34 @@
 	  displayName: 'Square',
 	
 	  getClasses: function getClasses() {
-	    var squareClasses = 'square';
-	    switch (this.props.status) {
-	      case 0:
-	        squareClasses += ' open';
-	        break;
-	      case 1:
-	        squareClasses += ' ship';
-	        break;
-	      case 2:
-	        squareClasses += ' damage';
-	        break;
-	      case 3:
-	        squareClasses += ' missed';
-	        break;
+	    var squareClasses;
+	    if (this.props.enemyBoard) {
+	      // don't reveal the opponent's board
+	      squareClasses = 'square enemy-square';
+	      switch (this.props.status) {
+	        case 2:
+	          squareClasses += ' ship';
+	          break;
+	        case 3:
+	          squareClasses += ' missed';
+	          break;
+	      }
+	    } else {
+	      squareClasses = 'square';
+	      switch (this.props.status) {
+	        case 0:
+	          squareClasses += ' open';
+	          break;
+	        case 1:
+	          squareClasses += ' ship';
+	          break;
+	        case 2:
+	          squareClasses += ' damage';
+	          break;
+	        case 3:
+	          squareClasses += ' open';
+	          break;
+	      }
 	    }
 	    return squareClasses;
 	  },
