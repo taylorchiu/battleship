@@ -62,19 +62,27 @@ var BattleshipApp = React.createClass({
 				self = this;
 
 		shipLengths.forEach(function(length){
-				var orientation = self.ORIENTATIONS[self.getRandomInt(0,1)],
-						startRow,
-						startIndex;
-				if(orientation == 'vertical'){
-					startRow = self.getRandomInt(0,9-length);
-					startIndex = self.getRandomInt(0,9);
-				}else if(orientation == 'horizontal'){
-					startRow = self.getRandomInt(0,9);
-					startIndex = self.getRandomInt(0,9-length);
-				}
-				board = self.placeShip(board, orientation, length, startRow, startIndex);
+			var orientation = self.ORIENTATIONS[self.getRandomInt(0,1)],
+					startRowAndIndex = self.getStartRowAndIndex(orientation, length),
+					startRow = startRowAndIndex.startRow,
+					startIndex = startRowAndIndex.startIndex;
+			board = self.placeShip(board, orientation, length, startRow, startIndex);
 		});
 		return board;
+	},
+
+	getStartRowAndIndex: function(orientation, length){
+		var startIndex,
+				startRow,
+				rowAndIndex = {}
+		if(orientation == 'vertical'){
+			startRow = this.getRandomInt(0,9-length);
+			startIndex = this.getRandomInt(0,9);
+		}else if(orientation == 'horizontal'){
+			startRow = this.getRandomInt(0,9);
+			startIndex = this.getRandomInt(0,9-length);
+		}
+		return rowAndIndex = { startRow: startRow, startIndex: startIndex }
 	},
 
 	placeShip: function(board, orientation, length, startRow, startIndex){
@@ -87,9 +95,9 @@ var BattleshipApp = React.createClass({
 				shipPlaced = true;
 				newBoard = self.buildShip(board, orientation, length, startRow, startIndex);
 			}else{
-				startIndex = self.getRandomInt(0,9);
-				startRow = self.getRandomInt(0,9-length);
-				self.placeShip(board, orientation, length, startRow, startIndex);
+				var newStartIndex = self.getStartRowAndIndex(orientation, length).startIndex;
+				var newStartRow = self.getStartRowAndIndex(orientation, length).startRow;
+				self.placeShip(board, orientation, length, newStartRow, newStartIndex);
 				newBoard = board;
 			}
 			return shipPlaced = newBoard;
