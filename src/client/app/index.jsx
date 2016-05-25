@@ -157,10 +157,8 @@ var BattleshipApp = React.createClass({
 				playerB = this.instancesInArray(this.flattenArray(this.state.gameBoardA), 2);
 		if(playerA >= total_possible){
 			alert('Player A is the winner!');
-			this.newGame();
 		}else if(playerB >= total_possible){
 			alert('Player B is the winner!');
-			this.newGame();
 		}
 	},
 
@@ -218,6 +216,7 @@ var BattleshipApp = React.createClass({
 		return(
 			<div className='game-body'>
 				<h3> Battleship! </h3>
+				<p> Click new game to begin!</p>
 				<button onClick={this.newGame}>New Game</button>
 				<div className='key'>
 					Key

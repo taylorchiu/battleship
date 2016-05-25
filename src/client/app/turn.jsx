@@ -18,12 +18,13 @@ var Turn = React.createClass({
               currentTurn={this.props.currentTurn}/>
         <br/>
         <h5>Enemy Ships</h5>
+        <p>Click on any square in the Enemy grid to fire a torpedo</p>
         <Grid key='enemy'
               enemyBoard={enemyBoard}
               handleSelect={this.props.handleSelect}
               gameBoard={enemyBoard}
               currentTurn={this.props.currentTurn}/>
-        <button onClick={this.props.hideBoard}>Hide Board and Switch Players</button>
+        <button onClick={this.props.hideBoard} className='button-margin'>Hide Board and Switch Players</button>
 
       </div>
     )

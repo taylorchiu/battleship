@@ -189,10 +189,8 @@
 			    playerB = this.instancesInArray(this.flattenArray(this.state.gameBoardA), 2);
 			if (playerA >= total_possible) {
 				alert('Player A is the winner!');
-				this.newGame();
 			} else if (playerB >= total_possible) {
 				alert('Player B is the winner!');
-				this.newGame();
 			}
 		},
 	
@@ -254,6 +252,11 @@
 					'h3',
 					null,
 					' Battleship! '
+				),
+				React.createElement(
+					'p',
+					null,
+					' Click new game to begin!'
 				),
 				React.createElement(
 					'button',
@@ -21115,6 +21118,11 @@
 	        null,
 	        'Enemy Ships'
 	      ),
+	      React.createElement(
+	        'p',
+	        null,
+	        'Click on any square in the Enemy grid to fire a torpedo'
+	      ),
 	      React.createElement(Grid, { key: 'enemy',
 	        enemyBoard: enemyBoard,
 	        handleSelect: this.props.handleSelect,
@@ -21122,7 +21130,7 @@
 	        currentTurn: this.props.currentTurn }),
 	      React.createElement(
 	        'button',
-	        { onClick: this.props.hideBoard },
+	        { onClick: this.props.hideBoard, className: 'button-margin' },
 	        'Hide Board and Switch Players'
 	      )
 	    );

@@ -7,10 +7,15 @@
 
 .key{
 	width: 200px;
+	width: 200px;
+	position: absolute;
+	margin-left: -50px;
+	margin-top: 125px;
+
 }
 
 .current-turn, .button-visible{
-	display: block;
+	display: initial;
 }
 
 .current-turn.hidden, .button-hidden{
@@ -18,10 +23,13 @@
 }
 
 button{
-	margin-top: 40px;
 	width: 200px;
 	background-color: teal;
 	color: white;
+}
+
+button.button-margin{
+	margin-top: 40px;
 }
 
 .initial-grid{
@@ -79,10 +87,6 @@ button{
 
 .damage{
 	background-color: red;
-}
-
-.missed{
-	background-color: teal;
 }
 
 .enemy-square{
