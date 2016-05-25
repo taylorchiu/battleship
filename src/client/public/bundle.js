@@ -21049,7 +21049,8 @@
 	
 		renderSquares: function renderSquares() {
 			var squares = [],
-			    value;
+			    value,
+			    status;
 			// create the header column
 			squares.push(React.createElement(Square, { key: 'header',
 				id: 'square-header',
@@ -21057,12 +21058,15 @@
 			for (var i = 0; i < 10; i++) {
 				if (this.props.headerRow) {
 					value = i + 1;
+					status = 'square-header';
 				} else {
-					value = this.props.gameBoard[this.props.rowIndex][i];
+					value = '';
+					status = this.props.gameBoard[this.props.rowIndex][i];
 				}
 				squares.push(React.createElement(Square, { key: i,
 					id: 'square-' + i,
 					value: value,
+					status: status,
 					handleSelect: this.props.handleSelect }));
 			};
 			return squares;
@@ -21092,17 +21096,36 @@
 	var React = __webpack_require__(/*! react */ 162);
 	
 	var Square = React.createClass({
-		displayName: 'Square',
+	  displayName: 'Square',
 	
-		render: function render() {
-			return React.createElement(
-				'div',
-				{ className: 'square',
-					id: this.props.id,
-					onClick: this.props.handleSelect },
-				this.props.value
-			);
-		}
+	  getClasses: function getClasses() {
+	    var squareClasses = 'square';
+	    switch (this.props.status) {
+	      case 0:
+	        squareClasses += ' open';
+	        break;
+	      case 1:
+	        squareClasses += ' ship';
+	        break;
+	      case 2:
+	        squareClasses += ' damage';
+	        break;
+	      case 3:
+	        squareClasses += ' missed';
+	        break;
+	    }
+	    return squareClasses;
+	  },
+	
+	  render: function render() {
+	    return React.createElement(
+	      'div',
+	      { className: this.getClasses(),
+	        id: this.props.id,
+	        onClick: this.props.handleSelect },
+	      this.props.value
+	    );
+	  }
 	});
 	
 	module.exports = Square;

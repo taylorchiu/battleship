@@ -50,3 +50,19 @@ h3{
 	border: none;
 	color: black;
 }
+
+.square.ship{
+	background-color: gray;
+}
+
+.square.open{
+	background-color: lightblue;
+}
+
+.square.damage{
+	background-color: orange;
+}
+
+.square.missed{
+	background-color: teal;
+}
