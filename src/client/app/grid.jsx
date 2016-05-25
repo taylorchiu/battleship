@@ -27,7 +27,6 @@ var Grid = React.createClass({
 		return(
 			<div className='initial-grid'>
 				<div className='top-labels'>
-
 				</div>
 				{rows}
 			</div>

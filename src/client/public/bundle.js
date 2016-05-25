@@ -64,22 +64,34 @@
 		// 			  3: missedShot
 		// 			}
 	
-		BOARD: [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
+		// BOARD: [
+		// 				[0,0,0,0,0,0,0,0,0,0],
+		// 				[0,0,0,0,0,0,0,0,0,0],
+		// 				[0,0,0,0,0,0,0,0,0,0],
+		// 				[0,0,0,0,0,0,0,0,0,0],
+		// 				[0,0,0,0,0,0,0,0,0,0],
+		// 				[0,0,0,0,0,0,0,0,0,0],
+		// 				[0,0,0,0,0,0,0,0,0,0],
+		// 				[0,0,0,0,0,0,0,0,0,0],
+		// 				[0,0,0,0,0,0,0,0,0,0],
+		// 				[0,0,0,0,0,0,0,0,0,0]
+		// 			],
 	
 		ORIENTATIONS: ['vertical', 'horizontal'],
 	
 		getInitialState: function getInitialState() {
 			return {
-				gameBoardA: this.BOARD.slice(),
-				gameBoardB: this.BOARD.slice()
+				gameBoardA: [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
+				gameBoardB: [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
 			};
 		},
 	
 		newGame: function newGame() {
-			var newBoardA = this.placeShips();
-			// newBoardB = this.placeShips();
+			var newBoardA = this.placeShips(this.state.gameBoardA),
+			    newBoardB = this.placeShips(this.state.gameBoardB);
 			this.setState({
-				gameBoardA: newBoardA
+				gameBoardA: newBoardA,
+				gameBoardB: newBoardB
 			});
 		},
 	
@@ -88,11 +100,10 @@
 			return Math.floor(Math.random() * (max - min + 1)) + min;
 		},
 	
-		placeShips: function placeShips() {
+		placeShips: function placeShips(board) {
 			// 5 ships with lengths 5, 4, 4, 3, 2
 			var shipLengths = [5, 4, 4, 3, 2],
-			    self = this,
-			    board = this.BOARD.slice();
+			    self = this;
 	
 			shipLengths.forEach(function (length) {
 				var orientation = self.ORIENTATIONS[self.getRandomInt(0, 1)],
